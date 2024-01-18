@@ -204,8 +204,15 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setupUI()
-        updateTime()
+     
+        
+        getExchangeRate{ result in
+            if result {
+                self.setupUI()
+                self.updateTime()
+            }
+            
+        }
         
     }
     
