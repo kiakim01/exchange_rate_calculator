@@ -12,7 +12,7 @@ import Foundation
 extension ViewController {
     
     func getExchangeRate(completionHandler: @escaping (Bool) -> Void) {
-        let key = "81f7e820bf5ff21df050b52a3d6c5297&currencies=KRW,%20JPY,%20PHP&source=USD&format=1"
+        let key = "53b376d6c42f0954c7fa770d5dc2ee6a&currencies=KRW,%20JPY,%20PHP&source=USD&format=1"
         let requestURL = "http://apilayer.net/api/live?access_key=\(key)"
         
         guard let url = URL(string: requestURL) else {
@@ -31,25 +31,80 @@ extension ViewController {
                 return
             }
             do {
-                //데이터 파싱
-                if let jsonDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]                {
+                // Decode JSON
+                let decoder = JSONDecoder()
+                let exchangeRateResponse = try decoder.decode(ExchangeRateResponse.self, from: data)
+                
+                // Accessing values
+                print("확인하고 싶은 값: \(exchangeRateResponse.quotes)")
+                
+                // UI update
+                DispatchQueue.main.async {
                     
-                    print("Received JSON: \(jsonDict)")
-
-                    //UI 업데이트
-                    DispatchQueue.main.async {
-//                        self.weatherConditon = conditionCode
-                     completionHandler(true)
+                    //optionalDoble
+                    let valueKRW = exchangeRateResponse.quotes["USDKRW"]
+                    let valueJPY = exchangeRateResponse.quotes["USDJPY"]
+                    let valuePHP = exchangeRateResponse.quotes["USDPHP"]
+                    
+                    
+                    if let selectCurrency = self.recipentCountryButton.titleLabel?.text{
+                        
+                        print("selectCurrency",selectCurrency)
+                        
+                        switch selectCurrency {
+                        case CurrencyType.KRW.rawValue :
+                            
+                            if let unwrappedValueKRW = valueKRW {
+                                self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueKRW)
+                                self.pureExchangeRate = unwrappedValueKRW
+                                print("check",self.pureExchangeRate)
+                            }
+                            
+                        case CurrencyType.JPY.rawValue :
+                            if let unwrappedValueJPY = valueJPY {
+                                print(unwrappedValueJPY)
+                                self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueJPY)
+                                self.pureExchangeRate = unwrappedValueJPY
+                                
+                            }
+                        case CurrencyType.PHP.rawValue:
+                            if let unwrappedValuePHP = valuePHP {
+                                print(unwrappedValuePHP)
+                                self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValuePHP)
+                                self.pureExchangeRate = unwrappedValuePHP
+                            }
+                        default:
+                            print("default입니다.")
+                            if let unwrappedValueKRW = valueKRW {
+                                self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueKRW)
+                                self.pureExchangeRate = unwrappedValueKRW
+                            }
+                        }
                     }
-                } else {
-                    completionHandler(false)
+                    
+                    completionHandler(true)
                 }
             } catch {
-                print("Error parsing JSON: \(error.localizedDescription)")
+                print("Error decoding JSON: \(error.localizedDescription)")
+                print("Your monthly usage limit has been reached. ")
                 completionHandler(false)
             }
         }
         task.resume()
     }
+    
+    
+    func formatDoubleToString(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        
+        if let formattedString = formatter.string(from: NSNumber(value: value)) {
+            return formattedString
+        } else {
+            return "\(value)"
+        }
+    }
+    
     
 }

@@ -7,13 +7,18 @@
 
 import UIKit
 
+
+enum CurrencyType : String, CaseIterable {
+    case none = ""
+    case KRW = "한국(KRW) "
+    case JPY = "일본(JPY)"
+    case PHP = "필리핀(PHP)"
+}
+
+
 class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
-    enum CurrencyType : String, CaseIterable {
-        case KRW = "한국(KRW)"
-        case JPY = "일본(JPY)"
-        case PHP = "필리핀(PHP)"
-    }
+    var pureExchangeRate : Double = 0
 
     
     let viewContainer = {
@@ -61,11 +66,11 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     let recipentCountryButton = {
         let button = UIButton()
-                button.setTitle("한국(KRW) ▼ ", for: .normal)
+        button.setTitle("한국(KRW)", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-//        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(selecCurrency), for: .touchUpInside)
+        //        button.layer.borderWidth = 1
+        button.addTarget(self, action: #selector(openPickerView), for: .touchUpInside)
         return button
     }()
     
@@ -84,13 +89,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return label
     }()
     
-        
-    let exchangeRatePrice = {
-        let label = UILabel()
-        label.text = "11,223,323 "
-        return label
-    }()
-
+    let exchangeRatePrice = UILabel()
+    
+//        let exchangeRatePrice = {
+//            let label = UILabel()
+//            label.text = "1000.55"
+//            return label
+//        }()
+//    
     
     let exchangeRateCurrency = {
         let label = UILabel()
@@ -130,6 +136,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return label
     }()
     
+    //숫자만 입력되도록 해야겠다.
     let remittanceTextField = {
         let textField = UITextField()
         textField.placeholder = "입력"
@@ -149,15 +156,27 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     let emptyView3 = UIView()
     
     
+    let buttonLine = {
+        let button = UIButton()
+        button.setTitle("계산하기", for: .normal)
+        button.backgroundColor = UIColor.systemBlue
+        button.layer.cornerRadius = 5
+        button.addTarget(self, action:#selector(amountCalculation), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    
     let checkLine = {
         let view = UIView()
-           return view
+        //        view.layer.borderWidth = 1
+        return view
     }()
     
     let checkCenterBox = {
         let view = UIStackView()
         view.axis = .horizontal
-         view.spacing = 5
+        view.spacing = 5
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -174,9 +193,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     let checkCalculatedValues = {
         let label = UILabel()
-        label.text = "333,333,333"
+        label.text = "0"
         label.textAlignment = .center
-//        label.layer.borderWidth = 1
+        //        label.layer.borderWidth = 1
         return label
     }()
     
@@ -184,7 +203,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         let label = UILabel()
         label.text = "KRW"
         label.textAlignment = .center
-//        label.layer.borderWidth = 1
+        //        label.layer.borderWidth = 1
         return label
     }()
     
@@ -192,7 +211,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         let label = UILabel()
         label.text = "입니다."
         label.textAlignment = .left
-//        label.layer.borderWidth = 1
+        //        label.layer.borderWidth = 1
         return label
     }()
     
@@ -203,18 +222,40 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-     
+        
+//        self.setupUI()
+//        self.updateTime()
         
         getExchangeRate{ result in
             if result {
                 self.setupUI()
                 self.updateTime()
             }
-            
         }
         
     }
+
+    @objc func amountCalculation() {
+         
+        if let amountText = remittanceTextField.text, let amount = Double(amountText){
+            
+            let calculatedValue = amount * pureExchangeRate
+            checkCalculatedValues.text = formatDoubleToString(calculatedValue)
+        }
+        else {
+            displayErrorMessage("송금액이 바르지 않습니다")
+            return
+        }
+    }
+    
+    func displayErrorMessage(_ message: String) {
+        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    
+    
     
     func updateTime(){
         let dateFormatter  = DateFormatter()
@@ -227,7 +268,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         timeValue.text = formattedTime
     }
     
-    @objc func selecCurrency(){
+    
+    @objc func openPickerView(){
         print(#function)
         
         let pickerView = UIPickerView()
@@ -240,13 +282,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         pickerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             pickerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pickerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
+            pickerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
         pickerView.isHidden = false
-        
-        
     }
     
     
@@ -272,17 +310,28 @@ extension ViewController {
         }
         
         if let currencyType = CurrencyType(rawValue: selectedCurrency) {
-            recipentCountryButton.setTitle(selectedCurrency, for: .normal)
             
-            exchangeRateCurrency.text = String(describing: currencyType)
-            checkCurrency.text = String(describing: currencyType)
+            self.recipentCountryButton.setTitle(selectedCurrency, for: .normal)
+            self.exchangeRateCurrency.text = String(describing: currencyType)
+            self.checkCurrency.text = String(describing: currencyType)
+            
+            // 통화가 변경 될때만 업데이트합니다.
+            if selectedCurrency != self.exchangeRateCurrency.text {
+                updateExchangeRate()
+            }
         }
         
         pickerView.isHidden = true
         
-        
     }
     
+    func updateExchangeRate(){
+        getExchangeRate { result in
+            if result {
+                print("업데이트를 요청했습니다.")
+            }
+        }
+    }
     
 }
 //UI
@@ -296,6 +345,7 @@ extension ViewController{
         contentsBox.addArrangedSubview(exchangeRateLine)
         contentsBox.addArrangedSubview(timeLine)
         contentsBox.addArrangedSubview(remittanceLine)
+        contentsBox.addArrangedSubview(buttonLine)
         contentsBox.addArrangedSubview(emptyView)
         contentsBox.addArrangedSubview(checkLine)
         recipientCoutryLine.addArrangedSubview(recipentLable)

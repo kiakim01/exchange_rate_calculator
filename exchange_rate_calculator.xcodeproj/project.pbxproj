@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		969C5EF82B596D1600534F95 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969C5EF72B596D1600534F95 /* API.swift */; };
+		96AC013C2B5A0DA0008D2347 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AC013B2B5A0DA0008D2347 /* Model.swift */; };
 		96BD755B2B5780960057B589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BD755A2B5780960057B589 /* AppDelegate.swift */; };
 		96BD755D2B5780960057B589 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BD755C2B5780960057B589 /* SceneDelegate.swift */; };
 		96BD755F2B5780960057B589 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BD755E2B5780960057B589 /* ViewController.swift */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		969C5EF72B596D1600534F95 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		96AC013B2B5A0DA0008D2347 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		96BD75572B5780960057B589 /* exchange_rate_calculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = exchange_rate_calculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96BD755A2B5780960057B589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		96BD755C2B5780960057B589 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +45,7 @@
 			isa = PBXGroup;
 			children = (
 				969C5EF72B596D1600534F95 /* API.swift */,
+				96AC013B2B5A0DA0008D2347 /* Model.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -149,6 +152,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96AC013C2B5A0DA0008D2347 /* Model.swift in Sources */,
 				96BD755F2B5780960057B589 /* ViewController.swift in Sources */,
 				96BD755B2B5780960057B589 /* AppDelegate.swift in Sources */,
 				969C5EF82B596D1600534F95 /* API.swift in Sources */,
