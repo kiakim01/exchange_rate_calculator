@@ -31,12 +31,8 @@ extension ViewController {
                 return
             }
             do {
-                // Decode JSON
                 let decoder = JSONDecoder()
                 let exchangeRateResponse = try decoder.decode(ExchangeRateResponse.self, from: data)
-                
-                // Accessing values
-                print("확인하고 싶은 값: \(exchangeRateResponse.quotes)")
                 
                 // UI update
                 DispatchQueue.main.async {
@@ -49,39 +45,31 @@ extension ViewController {
                     
                     if let selectCurrency = self.recipentCountryButton.titleLabel?.text{
                         
-                        print("selectCurrency",selectCurrency)
-                        
                         switch selectCurrency {
                         case CurrencyType.KRW.rawValue :
                             
                             if let unwrappedValueKRW = valueKRW {
                                 self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueKRW)
                                 self.pureExchangeRate = unwrappedValueKRW
-                                print("check",self.pureExchangeRate)
                             }
                             
                         case CurrencyType.JPY.rawValue :
                             if let unwrappedValueJPY = valueJPY {
-                                print(unwrappedValueJPY)
                                 self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueJPY)
                                 self.pureExchangeRate = unwrappedValueJPY
-                                
                             }
                         case CurrencyType.PHP.rawValue:
                             if let unwrappedValuePHP = valuePHP {
-                                print(unwrappedValuePHP)
                                 self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValuePHP)
                                 self.pureExchangeRate = unwrappedValuePHP
                             }
                         default:
-                            print("default입니다.")
                             if let unwrappedValueKRW = valueKRW {
                                 self.exchangeRatePrice.text = self.formatDoubleToString(unwrappedValueKRW)
                                 self.pureExchangeRate = unwrappedValueKRW
                             }
                         }
                     }
-                    
                     completionHandler(true)
                 }
             } catch {
